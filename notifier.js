@@ -3,24 +3,18 @@
 //
 
 var LineNotifyEndPoint = "https://notify-api.line.me/api/notify";
-var AccessToken = ""; // Testing
-// var AccessToken = ""; // 北小泳隊
 
 //
 // Send message to Line Notify
 //
 
-function test_notification() {
-  sendLineNotification("麥克風測試 1, 2, 3");
-}
-
-function sendLineNotification(message) {
+function sendLineNotification(token, message) {
     var formData = {
         "message": message
     };
 
     var options = {
-        "headers": { "Authorization": "Bearer " + AccessToken },
+        "headers": { "Authorization": "Bearer " + token },
         "method": 'post',
         "payload": formData
     };
