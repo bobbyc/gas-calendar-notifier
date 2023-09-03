@@ -6,7 +6,6 @@ var _Spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
 var _SheetSchedule = _Spreadsheet.getSheetByName("Schedule");
 var _CalendarRange = SpreadsheetApp.getActive().getRangeByName("CALENDAR");
 
-
 const _today = new Date();
 const _nextday = new Date();
 _nextday.setDate(_today.getDate() + 1);
@@ -32,14 +31,14 @@ function on_duty() {
 }
 
 function on_week_duty() {
-    send_week_duty_notification(LineNotifyAccessToken);
+    send_week_duty_notification(prod_LineNotifyAccessToken);
 }
 
 function on_day_duty() {
-    send_day_duty_notification(LineNotifyAccessToken);
+    send_day_duty_notification(prod_LineNotifyAccessToken);
 }
 
 function on_update_calendar() {
-    const calendar = CalendarApp.getCalendarById(GoogleCalendarID);
+    const calendar = CalendarApp.getCalendarById(prod_GoogleCalendarID);
     update_calendar_by_sheet(calendar);
 }
