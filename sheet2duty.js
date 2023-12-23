@@ -12,7 +12,7 @@ function format_on_duty_message(values) {
     var onduty = Utilities.formatString("@%s @%s", duty1, duty2);
 
     if (time != "")
-    datetime += Utilities.formatDate(new Date(values[2]), "GMT+8", "HH:mm");
+        datetime += Utilities.formatDate(new Date(values[2]), "GMT+8", "HH:mm");
 
     // return formatted message string with date, time, location, and onduty
     var msg = "";
@@ -43,6 +43,20 @@ function send_day_duty_notification(token) {
     var msg = "\n\n ***** 泳訓通知 ***** \n";
     msg += format_on_duty_message(values[index]) + "\n";
     msg += "謝謝值班家長";
+
+    // if dayofweek is weekday, add extra message
+    var dayofweek = values[index][1];
+    if (dayofweek == "二" ||
+        dayofweek == "三" ||
+        dayofweek == "四") {
+        msg += "\n\n ***** ！注意！ ***** \n";
+        msg += "低年級同學請 07:50 入班晨光時間！\n";
+        msg += "中高年級隊員 08:40 進教室，準備上課！\n";
+    } else if (dayofweek == "一" || dayofweek == "五") {
+        msg += "\n\n ***** ！注意！ ***** \n";
+        msg += "全體隊員請於 07:50 前進教室！\n";
+    } else {
+    }
 
     // Logger.log(msg);
     if (msg != "") {
