@@ -34,7 +34,7 @@ function format_on_duty_message(values) {
 }
 
 function send_day_duty_notification(token) {
-    var values = _CalendarRange.getValues();
+    var values = _rangeCALENDAR.getValues();
     // Logger.log(JSON.stringify(values));
     // get row length in values
     // find next day in row of values
@@ -65,7 +65,7 @@ function send_day_duty_notification(token) {
 }
 
 function send_week_duty_notification(token) {
-    var values = _CalendarRange.getValues();
+    var values = _rangeCALENDAR.getValues();
     // Logger.log(JSON.stringify(values));
     // get row length in values
     // skip first row, loop 7 days

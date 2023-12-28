@@ -3,8 +3,24 @@
 //
 
 var _Spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+
+// Sheets: Schedule, Calendar, 行事曆版本, 文字版, Contact
 var _SheetSchedule = _Spreadsheet.getSheetByName("Schedule");
-var _CalendarRange = SpreadsheetApp.getActive().getRangeByName("CALENDAR");
+// var _SheetCalendar = _Spreadsheet.getSheetByName("Calendar");
+// var _SheetCalendarText = _Spreadsheet.getSheetByName("文字版");
+// var _SheetCalendarVersion = _Spreadsheet.getSheetByName("行事曆版本");
+// var _SheetContact = _Spreadsheet.getSheetByName("Contact");
+var _SheetCheckIn = _Spreadsheet.getSheetByName("CheckIn");
+
+// Named Ranges:
+const _rangeCALENDAR = SpreadsheetApp.getActive().getRangeByName("CALENDAR");
+// const _rangeDUTY = SpreadsheetApp.getActive().getRangeByName("DUTY");
+// const _rangeSCHEDULE = SpreadsheetApp.getActive().getRangeByName("SCHEDULE");
+// const _rangeDUTYMAP = SpreadsheetApp.getActive().getRangeByName("DUTYMAP");
+// const _rangeScheduleHeader = SpreadsheetApp.getActive().getRangeByName("ScheduleHeader");
+// const _rangeScheduleName = SpreadsheetApp.getActive().getRangeByName("ScheduleName");
+// const _rangeSDATE = SpreadsheetApp.getActive().getRangeByName("SDATE");
+// const _rangeWEEKMAP = SpreadsheetApp.getActive().getRangeByName("WEEKMAP");
 
 const _today = new Date();
 const _nextday = new Date();

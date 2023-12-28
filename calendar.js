@@ -6,7 +6,7 @@
 // const End = new Date(nextday.getFullYear(), nextday.getMonth(), nextday.getDate(), 23, 59, 59, 999);
 
 function update_calendar_by_sheet(calendar) {
-    var values = _CalendarRange.getValues();
+    var values = _rangeCALENDAR.getValues();
     // Logger.log(JSON.stringify(values));
 
     // get row length in values
