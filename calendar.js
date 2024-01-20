@@ -5,29 +5,48 @@
 // const Start = new Date(nextday.getFullYear(), nextday.getMonth(), nextday.getDate(), 0, 0, 0, 0);
 // const End = new Date(nextday.getFullYear(), nextday.getMonth(), nextday.getDate(), 23, 59, 59, 999);
 
+function map_calendar_values(columnName, row) {
+    // map column name and row value
+    var valueMap = {};
+    var columnLength = columnName.length;
+    for (var col = 0; col < columnLength; col++) {
+        valueMap[columnName[col]] = row[col];
+    }
+    return valueMap;
+}
+
 function update_calendar_by_sheet(calendar) {
     var values = _rangeCALENDAR.getValues();
     // Logger.log(JSON.stringify(values));
 
     // get row length in values
     var rowLength = values.length;
+
+    // Update calendar event by each row
+    var columnName = values[0];
     for (var i = 1; i < rowLength; i++) {
         var row = values[i];
-        update_calendar_on_duty_event(calendar, row);
+
+        var valueMap = map_calendar_values(columnName, row);
+        update_calendar_on_duty_event(calendar, valueMap);
     }
 }
 
 function update_calendar_on_duty_event(calendar, values) {
     Logger.log('Google Calendar is "%s".', calendar.getName());
 
-    var date = values[0];
-    var time = values[2];
-    var note = values[3];
-    var location = values[4];
-    var onduty = Utilities.formatString("@%s @%s", values[5], values[6]);
+    var date = values["日期"];
+    var time = values["時間"];
+    var timeend = values["結束"];
+    var note = values["備註"];
+    var location = values["地點"];
+    var onduty = Utilities.formatString("@%s @%s", values["值1"], values["值2"]);
     var title = location + " " + onduty;
-    var email1 = values[7] ? values[7] : "";
-    var email2 = values[8] ? values[8] : "";
+    var email1 = values["Email1"];
+    var email2 = values["Email2"];
+
+    email1 = email1 ? email1 : "";
+    email2 = email2 ? email2 : "";
 
     // search event tagged by 'onDuty'
     // if event tagged by 'onDuty' = "Yes" exist, update event info
@@ -36,10 +55,14 @@ function update_calendar_on_duty_event(calendar, values) {
     var onduty_event = found_events.find(e => e.getTag("onDuty") == "Yes");
 
     // update onduty event
-    var onduty_datetime = Utilities.formatDate(date, "GMT+8", "yyyy/MM/dd ");
-    onduty_datetime += Utilities.formatDate(new Date(time), "GMT+8", "HH:mm");
-    Logger.log("%s, %s, %s, %s, %s", onduty_datetime, title, location, note, onduty);
+    var onduty_date = Utilities.formatDate(date, "GMT+8", "yyyy/MM/dd ");
+    var onduty_datetime = onduty_date + Utilities.formatDate(new Date(time), "GMT+8", "HH:mm");
+    var endduty_datetime = onduty_datetime;
+    if (timeend != "") endduty_datetime = onduty_date + Utilities.formatDate(new Date(timeend), "GMT+8", "HH:mm");
+
+    Logger.log("%s, %s, %s, %s, %s, %s", onduty_datetime, endduty_datetime, title, location, note, onduty);
     var onduty_event_time = new Date(onduty_datetime);
+    var endduty_event_time = new Date(endduty_datetime);
     if (onduty_event == null) {
         // create new google caldendar event
         // set title, location and time
@@ -56,7 +79,7 @@ function update_calendar_on_duty_event(calendar, values) {
         onduty_event.setAllDayDate(onduty_event_time);
     } else {
         onduty_event.setTitle(title);
-        onduty_event.setTime(onduty_event_time, onduty_event_time);
+        onduty_event.setTime(onduty_event_time, endduty_event_time);
     }
 
     // remove guests if guest is not email1 nor email2 from guest list

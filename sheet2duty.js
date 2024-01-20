@@ -3,16 +3,20 @@
 //
 
 function format_on_duty_message(values) {
-    var datetime = Utilities.formatDate(values[0], "GMT+8", "MM/dd (E) ");
-    var time = values[2];
-    var note = values[3];
-    var location = values[4];
-    var duty1 = values[5];
-    var duty2 = values[6];
+    var datetime = Utilities.formatDate(values["日期"], "GMT+8", "MM/dd (E) ");
+    var time = values["時間"];
+    var timeend = values["結束"];
+    var note = values["備註"];
+    var location = values["地點"];
+    var duty1 = values["值1"];
+    var duty2 = values["值2"];
     var onduty = Utilities.formatString("@%s @%s", duty1, duty2);
 
     if (time != "")
-        datetime += Utilities.formatDate(new Date(values[2]), "GMT+8", "HH:mm");
+        datetime += Utilities.formatDate(new Date(time), "GMT+8", "HH:mm");
+
+    if (timeend != "")
+        datetime += " - " + Utilities.formatDate(new Date(timeend), "GMT+8", "HH:mm");
 
     // return formatted message string with date, time, location, and onduty
     var msg = "";
@@ -38,29 +42,44 @@ function send_day_duty_notification(token) {
     // Logger.log(JSON.stringify(values));
     // get row length in values
     // find next day in row of values
-    var rowLength = values.length;
     var index = find_nextday_index(values);
-    var msg = "\n\n ***** 泳訓通知 ***** \n";
-    msg += format_on_duty_message(values[index]) + "\n";
-    msg += "謝謝值班家長";
+    var valueMap = map_calendar_values(values[0], values[index]);
+    var msg_template =
+    '\n\n' +
+    ' ***** 泳訓通知 ***** \n' +
+    '$on_duty_message\n' +
+    '謝謝值班家長\n' +
+    '\n' +
+    '$extra_message\n' +
+    '\n' +
+    '$weather_message';
+
+    var duty_msg = format_on_duty_message(valueMap);
+    var weather_msg = weather_description(valueMap);
 
     // if dayofweek is weekday, add extra message
-    var dayofweek = values[index][1];
+    var dayofweek = valueMap["週"];
+    var extra_msg = "";
     if (dayofweek == "二" ||
         dayofweek == "三" ||
         dayofweek == "四") {
-        msg += "\n\n ***** ！注意！ ***** \n";
-        msg += "低年級同學請 07:50 入班晨光時間！\n";
-        msg += "中高年級隊員 08:40 進教室，準備上課！\n";
+        extra_msg += "\n\n ***** ！注意！ ***** \n";
+        extra_msg += "低年級同學請 07:50 入班晨光時間！\n";
+        extra_msg += "中高年級隊員 08:40 進教室，準備上課！\n";
     } else if (dayofweek == "一" || dayofweek == "五") {
-        msg += "\n\n ***** ！注意！ ***** \n";
-        msg += "全體隊員請於 07:50 前進教室！\n";
+        extra_msg += "\n\n ***** ！注意！ ***** \n";
+        extra_msg += "全體隊員請於 07:50 前進教室！\n";
     } else {
     }
 
+    // Format message
+    msg_template = msg_template.replace('$on_duty_message', duty_msg);
+    msg_template = msg_template.replace('$extra_message', extra_msg);
+    msg_template = msg_template.replace('$weather_message', weather_msg);
+
     // Logger.log(msg);
-    if (msg != "") {
-        sendLineNotification(token, msg);
+    if (msg_template != "") {
+        sendLineNotification(token, msg_template);
     }
 }
 
@@ -75,7 +94,8 @@ function send_week_duty_notification(token) {
     var index = find_nextday_index(values);
     var msg = "\n\n ***** 下週行事曆 ***** \n\n";
     for (var i = index; i < index + 7; i++) {
-        msg += format_on_duty_message(values[i]) + "\n";
+        var valueMap = map_calendar_values(values[0], values[i]);
+        msg += format_on_duty_message(valueMap) + "\n";
     }
 
     // Logger.log(msg);
